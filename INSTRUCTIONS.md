@@ -25,7 +25,7 @@ Here are the steps to use this repository with GitHub Desktop:
    - If someone else has modified the code click "Fetch origin" to retrieve them.
    - To merge the updates into your local repository, click "Pull origin".
 
-![Sample window of GitHub Desktop](image.png)
+![Sample window of GitHub Desktop](/1_Documentation/extra/image.png)
 
 Now you have the repository on your local machine and can use GitHub Desktop to push and pull changes to sync with the remote repository on GitHub.
 
