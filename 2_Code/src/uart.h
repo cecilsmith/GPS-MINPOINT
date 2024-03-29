@@ -13,6 +13,7 @@ extern "C"
 #endif /* __cplusplus */
 
     void initUART(int baudRate);
+    void sendPackage(char data[]);
 
 #ifdef __cplusplus
 }
