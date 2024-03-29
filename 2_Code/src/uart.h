@@ -3,12 +3,16 @@
 #ifndef UART_LIB
 #define UART_LIB
 
+#ifndef FCY
+#define FCY 16000000L
+#endif
+
 #ifdef __cplusplus
 extern "C"
 {
 #endif /* __cplusplus */
 
-    void initUART(void);
+    void initUART(int baudRate);
 
 #ifdef __cplusplus
 }

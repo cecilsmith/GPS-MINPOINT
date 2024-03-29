@@ -6,7 +6,7 @@ void initGPS(void)
 {
     // Execute once code goes here
     // Set up UART
-    initUART();
+    initUART(9600);
     // Set up GPS
     // INSERT CODE HERE
 }

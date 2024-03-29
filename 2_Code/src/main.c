@@ -17,6 +17,8 @@
 // Fail-Safe Clock Monitor is enabled)
 #pragma config FNOSC = FRCPLL // Oscillator Select (Fast RC Oscillator with PLL module (FRCPLL))
 
+#define FCY 16000000L // Define system clock frequency (16MHz)
+
 void setup(void)
 {
     // Execute once code goes here
