@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# Folder Metadata
+.DS_Store
+
 # Object files
 *.o
 *.ko
