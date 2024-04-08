@@ -24,7 +24,9 @@ void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void)
     
     IFS0bits.U1RXIF = 0;
     buffer[front++] = U1RXREG;
-    front &= 63;
+    if(front >= 63){
+        front = 0;
+    }
 }
 
 void send_GPS_Str_command(unsigned char* s)
@@ -51,7 +53,7 @@ void send_GPS_Char_command(unsigned char command)
     U1TXREG = command;
 }
 
-unsigned char get_GPS_data(void)
+unsigned char get_GPS_char(void)
 {
     // Retrieves a single NMEA character from the circular buffer
     // Waits until data is available (front is different from back)
@@ -61,24 +63,37 @@ unsigned char get_GPS_data(void)
 
     while (front == back) ;
     NMEA = buffer[back++];
-    back &= 63;
+    if(back >= 63){
+        back = 0;
+    }
     return NMEA;
 }
 
-void init_UART(baudRate)
+unsigned char get_GPS_Str(unsigned char* s, unsigned int size){
+    // Retrieves a string of data from the circular buffer
+    // Assigns the character data to the s pointer
+    // s: the retrieved string
+    // size: the size of the string that is expected to be received
+    //       e.g) a string from 0 - 10 would be sized 11. 
+    
+    for(int i = 0; i < size; i++){
+        s[i] = get_GPS_char;
+    }
+}
+
+void init_UART(unsigned int baudRate)
 {
     // Initializes UART communication settings
     // Configures UART module, pins, and interrupt flags
 
     CLKDIVbits.RCDIV = 0;
-    AD1PCFG = 0x9fff;  // For digital I/O.
     
-    _TRISB6 = 0;  // U1TX output pin
-    _TRISB10 = 1; // U1RX input pin
+    _TRISB6 = 0;  // Sets pin 15 (RB6) to U1TX output pin
+    _TRISB10 = 1; // Sets pin 21 (RB10) to U1RX input pin
     
     U1MODEbits.UARTEN = 0;
     U1MODEbits.BRGH = 0;
-    U1BRG = baudRate; // 16 MHz / (16 * 9600) - 1 = 103.16666667
+    U1BRG = 16000000 / (16 * baudRate) - 1; // 16 MHz / (16 * 9600) - 1 = 103.16666667
     U1MODEbits.UEN = 0; // UEN<1:0>: UARTx Enable bits. 00 = UxTX and UxRX pins are enabled and used.
     U1MODEbits.UARTEN = 1;
     
