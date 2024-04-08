@@ -69,7 +69,7 @@ unsigned char get_GPS_char(void)
     return NMEA;
 }
 
-unsigned char get_GPS_Str(unsigned char* s, unsigned int size){
+void get_GPS_Str(unsigned char* s, unsigned int size){
     // Retrieves a string of data from the circular buffer
     // Assigns the character data to the s pointer
     // s: the retrieved string
