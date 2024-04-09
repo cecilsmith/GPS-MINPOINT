@@ -16,7 +16,7 @@ extern "C" {
 void send_GPS_Str_command(unsigned char* s);
 void send_GPS_Char_command(unsigned char command);
 unsigned char get_GPS_data(void);
-unsigned char get_GPS_Str(unsigned char* s, unsigned int size);
+void get_GPS_Str(unsigned char* s, unsigned int size);
 void init_UART(unsigned int baudRate);
 
 #ifdef	__cplusplus
