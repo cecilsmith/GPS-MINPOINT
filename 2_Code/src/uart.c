@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-volatile unsigned char buffer[64]; // Circular buffer to store received data
+volatile unsigned char buffer[82]; // Circular buffer to store received data
 volatile unsigned char front = 0; // Index for adding data to front of the buffer
 volatile unsigned char back = 0; // Index for reading data from the back of the buffer
 
@@ -24,7 +24,7 @@ void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void)
     
     IFS0bits.U1RXIF = 0;
     buffer[front++] = U1RXREG;
-    if(front >= 63){
+    if(front >= 82){
         front = 0;
     }
 }
@@ -103,7 +103,7 @@ void init_UART(unsigned int baudRate)
     __builtin_write_OSCCONL(OSCCON & 0xbf); // unlock PPS
     _RP6R = 0x0003;   //RB6->UART1:U1TX; See Table 10-3 on P109 of the datasheet
     _U1RXR = 10;   //RB10->UART1:U1RX;
-    __builtin_write_OSCCONL(OSCCON | 0x40); // lock   PPS
+    __builtin_write_OSCCONL(OSCCON | 0x40); // lock     PPS
     
     IFS0bits.U1RXIF = 0;
     IEC0bits.U1RXIE = 1;

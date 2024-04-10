@@ -9,6 +9,8 @@ extern "C"
 #endif /* __cplusplus */
 
     void initGPS(void);
+    void checkSum(const char *cmd, char *hexsum);
+    
 
 #ifdef __cplusplus
 }
