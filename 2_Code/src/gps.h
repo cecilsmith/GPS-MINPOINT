@@ -9,8 +9,12 @@ extern "C"
 #endif /* __cplusplus */
 
     void initGPS(void);
-    void checkSum(const char *cmd, char *hexsum);
-    
+    int checkSum(char *cmd);
+    void initLocationAndTime();
+    double getRawLongitude();
+    double getRawLatitude();
+    char getLongitudeDirection();
+    char getLatitudeDirection();
 
 #ifdef __cplusplus
 }
