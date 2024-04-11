@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-volatile unsigned char buffer[64]; // Circular buffer to store received data
+volatile unsigned char buffer[170]; // Circular buffer to store received data
 volatile unsigned char front = 0; // Index for adding data to front of the buffer
 volatile unsigned char back = 0; // Index for reading data from the back of the buffer
 
@@ -24,7 +24,7 @@ void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void)
     
     IFS0bits.U1RXIF = 0;
     buffer[front++] = U1RXREG;
-    if(front >= 63){
+    if(front >= 170){
         front = 0;
     }
 }
@@ -61,24 +61,32 @@ unsigned char get_GPS_char(void)
     
     unsigned char NMEA;
 
-    while (front == back) ;
+    while(front == back) ;
     NMEA = buffer[back++];
-    if(back >= 63){
+    if(back >= 170){
         back = 0;
     }
     return NMEA;
 }
 
-void get_GPS_Str(unsigned char* s, unsigned int size){
+unsigned char get_GPS_Str(unsigned char* s){
     // Retrieves a string of data from the circular buffer
     // Assigns the character data to the s pointer
-    // s: the retrieved string
-    // size: the size of the string that is expected to be received
-    //       e.g) a string from 0 - 10 would be sized 11. 
+    // s:           the retrieved string
+    // i:           the size of the string that is retrieved from the circular buffer
+    //              e.g) a string from 0 - 10 would be sized 11. 
+    // last_front:  Stores the front value in case of any interrupts during the while loop
     
-    for(int i = 0; i < size; i++){
+    int i = 0;
+    
+    while(front == back);
+    
+    int last_front = front;
+    while(last_front != back){
         s[i] = get_GPS_char;
+        i++;
     }
+    return i;
 }
 
 void init_UART(unsigned int baudRate)
