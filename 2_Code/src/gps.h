@@ -15,6 +15,7 @@ extern "C"
     double getRawLatitude();
     char getLongitudeDirection();
     char getLatitudeDirection();
+    int checkGLL();
 
 #ifdef __cplusplus
 }

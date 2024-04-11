@@ -80,18 +80,16 @@ int checkSum(char *cmd) {
     return checksum;
 }
 
-double getLatitude() {
+double getRawLatitude() 
+{
     char latitude[15];
     
-    // Check if the moduleOutput is a GLL output
-    if (moduleOutput[3] == 'G' && moduleOutput[4] == 'L' && moduleOutput[5] == 'L') {
-        // Copy latitude characters from moduleOutput until a comma is encountered
-        for (int i = 0; moduleOutput[i + 7] != ','; i++) {
-            latitude[i] = moduleOutput[i + 7];
-        }
-        // Null-terminate the latitude string
-        latitude[14] = '\0';
+    // Copy latitude characters from moduleOutput until a comma is encountered
+    for (int i = 0; moduleOutput[i + 7] != ','; i++) {
+        latitude[i] = moduleOutput[i + 7];
     }
+    // Null-terminate the latitude string
+    latitude[14] = '\0';
 
     // Convert latitude string to double and return
     return strtod(latitude, NULL);
@@ -102,18 +100,14 @@ char getLatitudeDirection()
     int commaCounter = 0;
     char latitudeDirection;
     
-    // Check if the moduleOutput is a GLL output
-    if (moduleOutput[3] == 'G' && moduleOutput[4] == 'L' && moduleOutput[5] == 'L') {
-        for (int i = 0; commaCounter < 3; i++)
+    for (int i = 0; commaCounter < 3; i++)
+    {
+        if (moduleOutput[i] == ',')
         {
+            commaCounter++;
             if (commaCounter == 2)
             {
-                latitudeDirection = moduleOutput[i];
-            }
-
-            if (moduleOutput[i] == ',')
-            {
-                commaCounter++;
+                latitudeDirection = moduleOutput[i + 1];
             }
         }
     }
@@ -121,29 +115,26 @@ char getLatitudeDirection()
     return latitudeDirection;
 }
 
-double getLongitude() {
+double getRawLongitude() {
     int commaCounter = 0;
     int longitudeIndex = 0;
     char longitude[15];
     
-    // Check if the moduleOutput is a GLL output
-    if (moduleOutput[3] == 'G' && moduleOutput[4] == 'L' && moduleOutput[5] == 'L') {
-        for (int i = 0; commaCounter < 4; i++)
+    for (int i = 0; commaCounter < 4; i++)
+    {
+        if (commaCounter == 3)
         {
-            if (commaCounter == 3)
-            {
-                longitude[longitudeIndex++] = moduleOutput[i];
-            }
-
-            if (moduleOutput[i] == ',')
-            {
-                commaCounter++;
-            }
+            longitude[longitudeIndex++] = moduleOutput[i];
         }
 
-        // Null-terminate the latitude string
-        longitude[14] = '\0';
+        if (moduleOutput[i] == ',')
+        {
+            commaCounter++;
+        }
     }
+
+    // Null-terminate the latitude string
+    longitude[14] = '\0';
 
     // Convert latitude string to double and return
     return strtod(longitude, NULL);
@@ -154,21 +145,91 @@ char getLongitudeDirection()
     int commaCounter = 0;
     char longitudeDirection;
     
-    // Check if the moduleOutput is a GLL output
-    if (moduleOutput[3] == 'G' && moduleOutput[4] == 'L' && moduleOutput[5] == 'L') {
-        for (int i = 0; commaCounter < 5; i++)
+    for (int i = 0; commaCounter < 5; i++)
+    {
+        if (moduleOutput[i] == ',')
         {
+            commaCounter++;
             if (commaCounter == 4)
             {
-                longitudeDirection = moduleOutput[i];
-            }
-
-            if (moduleOutput[i] == ',')
-            {
-                commaCounter++;
+                longitudeDirection = moduleOutput[i + 1];
             }
         }
     }
     
     return longitudeDirection;
+}
+
+int checkGLL()
+{
+    if (moduleOutput[3] == 'G' && moduleOutput[4] == 'L' && moduleOutput[5] == 'L') 
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
+double getLatitude()
+{
+    double calculatedLatitude;
+    char latitude[14];
+    char degrees[3]; 
+    char minutes[12];
+
+    sprintf(latitude, "%f", getRawLatitude());
+
+    // Null-terminate the strings
+    latitude[13] = '\0';
+
+    // Extract degrees
+    degrees[0] = latitude[0];
+    degrees[1] = latitude[1];
+    degrees[2] = '\0'; // Null-terminate the string
+
+    // Extract minutes
+    for (int i = 2; i < 14; i++)
+    {
+        minutes[i - 2] = latitude[i];
+    }
+
+    // Convert degrees and minutes to double and calculate latitude
+    if (getLatitudeDirection() == 'N')
+    {
+        calculatedLatitude = strtod(degrees, NULL) + (strtod(minutes, NULL) / 60);
+    } 
+
+    return -1*calculatedLatitude;
+}
+
+double getLongitude()
+{
+    double calculatedLongitude;
+    char longitude[14];
+    char degrees[3]; 
+    char minutes[12];
+
+    sprintf(latitude, "%f", getRawLongitude());
+
+    // Null-terminate the strings
+    longitude[13] = '\0';
+
+    // Extract degrees
+    degrees[0] = longitude[0];
+    degrees[1] = longitude[1];
+    degrees[2] = '\0'; // Null-terminate the string
+
+    // Extract minutes
+    for (int i = 2; i < 14; i++)
+    {
+        minutes[i - 2] = longitude[i];
+    }
+
+    // Convert degrees and minutes to double and calculate longitude
+    if (getLongitudeDirection() == 'E')
+    {
+        calculatedLongitude = strtod(degrees, NULL) + (strtod(minutes, NULL) / 60);
+    } 
+
+    return -1*calculatedLongitude;
 }
