@@ -7,20 +7,17 @@
 
 // Initialize the GPS's date with this!
 // In "year,month,day" format.
-char *initialDate[] = "2024,4,10";
+char *initialDate = "2024,4,11";
 
 // Initialize the GPS's position with this!
 // Within 6 decimal points of precision, and no
 // spaces between commas
-char *initialLatitudeLongitude[] = "44.973039,-93.235338";
+char *initialLatitudeLongitude = "45.176927,-93.227022";
 
 
 // This string is used to store commands that are 
 // outputted by the module.
 char *moduleOutput[83];
-for (int i = 0; i < 83; i++) {
-    moduleOutput[i] = "";
-}
 
 // This array stores the raw coordinates of the module
 double rawCoordinates[2]; 
@@ -31,18 +28,19 @@ void initGPS(void)
     // Initializes the GPS with its relevant settings
 
     // Set up UART
-    initUART(9600);
+    init_UART(9600);
 
     // Set up GPS
     send_GPS_Str_command("$PGKC030,3,1*2E<CR><LF>");        // System cold start 
     send_GPS_Str_command("$PGKC115,1,0,0,0*2B<CR><LF>");    // Single GPS Mode (we're not going international)
     send_GPS_Str_command("PGKC101,500*36<CR><LF>");        // Output NMEA messages every 0.5 seconds
     send_GPS_Str_command("$PGKC115,1,0,0,0*2B<CR><LF>");   // Set the desired GNSS to GPS
-    send_GPS_Str_command("$PGKC147,9600*2A<CR><LF>");      // Set the baudrate to 9600
+    send_GPS_Str_command("$PGKC147,9600*0E<CR><LF>");      // Set the baudrate to 9600
     send_GPS_Str_command("$PGKC149,0,9600*1C<CR><LF>");    // Set the serial ports to accept NMEA data at 9600 bps
     send_GPS_Str_command("$PGKC239,1*3A<CR><LF>");         // Turns SBAS on (improves accuracy)
     send_GPS_Str_command("$PGKC242,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0*37<CR><LF>");   // output GLL and GST
     initLocationAndTime();                                  // Speeds up cold starts
+    initModuleOutput();
 }
 
 void initLocationAndTime() 
@@ -85,8 +83,8 @@ double getRawLatitude()
     char latitude[15];
     
     // Copy latitude characters from moduleOutput until a comma is encountered
-    for (int i = 0; moduleOutput[i + 7] != ','; i++) {
-        latitude[i] = moduleOutput[i + 7];
+    for (int i = 0; *moduleOutput[i + 7] != ','; i++) {
+        latitude[i] = *moduleOutput[i + 7];
     }
     // Null-terminate the latitude string
     latitude[14] = '\0';
@@ -102,12 +100,12 @@ char getLatitudeDirection()
     
     for (int i = 0; commaCounter < 3; i++)
     {
-        if (moduleOutput[i] == ',')
+        if (*moduleOutput[i] == ',')
         {
             commaCounter++;
             if (commaCounter == 2)
             {
-                latitudeDirection = moduleOutput[i + 1];
+                latitudeDirection = *moduleOutput[i + 1];
             }
         }
     }
@@ -124,10 +122,10 @@ double getRawLongitude() {
     {
         if (commaCounter == 3)
         {
-            longitude[longitudeIndex++] = moduleOutput[i];
+            longitude[longitudeIndex++] = *moduleOutput[i];
         }
 
-        if (moduleOutput[i] == ',')
+        if (*moduleOutput[i] == ',')
         {
             commaCounter++;
         }
@@ -147,12 +145,12 @@ char getLongitudeDirection()
     
     for (int i = 0; commaCounter < 5; i++)
     {
-        if (moduleOutput[i] == ',')
+        if (*moduleOutput[i] == ',')
         {
             commaCounter++;
             if (commaCounter == 4)
             {
-                longitudeDirection = moduleOutput[i + 1];
+                longitudeDirection = *moduleOutput[i + 1];
             }
         }
     }
@@ -162,7 +160,7 @@ char getLongitudeDirection()
 
 int checkGLL()
 {
-    if (moduleOutput[3] == 'G' && moduleOutput[4] == 'L' && moduleOutput[5] == 'L') 
+    if (*moduleOutput[3] == 'G' && *moduleOutput[4] == 'L' && *moduleOutput[5] == 'L') 
     {
         return 1;
     }
@@ -209,7 +207,7 @@ double getLongitude()
     char degrees[3]; 
     char minutes[12];
 
-    sprintf(latitude, "%f", getRawLongitude());
+    sprintf(longitude, "%f", getRawLongitude());
 
     // Null-terminate the strings
     longitude[13] = '\0';
@@ -232,4 +230,12 @@ double getLongitude()
     } 
 
     return -1*calculatedLongitude;
+}
+
+void initModuleOutput()
+{
+    for (int i = 0; i < 83; i++) 
+    {
+        moduleOutput[i] = '\0';
+    }
 }

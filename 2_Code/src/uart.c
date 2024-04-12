@@ -7,7 +7,7 @@
  */
 
 #include "xc.h"
-#include "UART.h"
+#include "uart.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -69,7 +69,8 @@ unsigned char get_GPS_char(void)
     return NMEA;
 }
 
-unsigned char get_GPS_Str(unsigned char* s){
+unsigned char get_GPS_Str(unsigned char* s)
+{
     // Retrieves a string of data from the circular buffer
     // Assigns the character data to the s pointer
     // s:           the retrieved string

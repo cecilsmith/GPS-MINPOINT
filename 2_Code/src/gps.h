@@ -13,9 +13,12 @@ extern "C"
     void initLocationAndTime();
     double getRawLongitude();
     double getRawLatitude();
+    double getLongitude();
+    double getLatitude();
     char getLongitudeDirection();
     char getLatitudeDirection();
     int checkGLL();
+    void initModuleOutput();
 
 #ifdef __cplusplus
 }
