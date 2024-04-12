@@ -9,6 +9,16 @@ extern "C"
 #endif /* __cplusplus */
 
     void initGPS(void);
+    int checkSum(char *cmd);
+    void initLocationAndTime();
+    double getRawLongitude();
+    double getRawLatitude();
+    double getLongitude();
+    double getLatitude();
+    char getLongitudeDirection();
+    char getLatitudeDirection();
+    int checkGLL();
+    void initModuleOutput();
 
 #ifdef __cplusplus
 }

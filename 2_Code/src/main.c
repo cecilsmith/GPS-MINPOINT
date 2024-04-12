@@ -1,4 +1,4 @@
-#include "xc.h"
+#include "xc.h" 
 #include "uart.h"
 #include "gps.h"
 
@@ -19,6 +19,8 @@
 
 #define FCY 16000000L // Define system clock frequency (16MHz)
 
+extern char *moduleOutput[83];
+
 void setup(void)
 {
     // Execute once code goes here
@@ -26,8 +28,46 @@ void setup(void)
     AD1PCFG = 0x9FFF;     // sets all pins to digital I/O
 }
 
+void timerInit()
+{
+    T2CON = 0;
+    T2CONbits.TCKPS = 0b11;
+    PR2 = 62499; //1 second
+    TMR2 = 0;
+
+    _T2IE = 1;
+    _T2IF = 0;
+
+    T2CONbits.TON = 1;
+}
+
+void __attribute__((interrupt, auto_psv)) _T2Interrupt(void) {
+    _T2IF = 0;
+}
+
+void delay_ms(unsigned int ms) {
+    while (ms-- > 0) {
+        asm("repeat #15998");
+        asm("nop");
+    }
+}
+
 int main(int argc, char const *argv[])
 {
     /* code */
+    setup();
+    timerInit();
+    initGPS();
+    double thisShouldBeLatitude = 0;
+    while(1)
+    {
+        while(checkGLL() == 0)
+        {
+            get_GPS_Str(moduleOutput);
+            delay_ms(200);
+        }
+        get_GPS_Str(moduleOutput);
+        thisShouldBeLatitude = getLatitude();
+    }
     return 0;
 }
