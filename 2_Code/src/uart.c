@@ -84,7 +84,7 @@ unsigned char get_GPS_Str(unsigned char* s)
     
     int last_front = front;
     while(last_front != back){
-        s[i] = get_GPS_char;
+        s[i] = get_GPS_char();
         i++;
     }
     return i;
