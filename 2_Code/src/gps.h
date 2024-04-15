@@ -18,7 +18,6 @@ extern "C"
     char getLongitudeDirection();
     char getLatitudeDirection();
     int checkGLL();
-    void initModuleOutput();
 
 #ifdef __cplusplus
 }

@@ -26,6 +26,8 @@ void setup(void)
     // Execute once code goes here
     CLKDIVbits.RCDIV = 0; // Set RCDIV=1:1 (default 2:1) 32MHz or FCY/2=16M
     AD1PCFG = 0x9FFF;     // sets all pins to digital I/O
+    LATA = 0;
+    LATB = 0;
 }
 
 void timerInit()
@@ -59,15 +61,19 @@ int main(int argc, char const *argv[])
     timerInit();
     initGPS();
     double thisShouldBeLatitude = 0;
+    
+    U1STAbits.UTXEN = 0;
+    
     while(1)
     {
-        while(checkGLL() == 0)
-        {
-            get_GPS_Str(moduleOutput);
+//        while(checkGLL() == 0)
+//        {
+//            get_GPS_Str(moduleOutput);
+////            send_GPS_Char_command('$');
             delay_ms(200);
-        }
-        get_GPS_Str(moduleOutput);
-        thisShouldBeLatitude = getLatitude();
+//        }
+//        get_GPS_Str(moduleOutput);
+//        thisShouldBeLatitude = getLatitude();
     }
     return 0;
 }

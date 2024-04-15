@@ -34,13 +34,11 @@ void send_GPS_Str_command(unsigned char* s)
     // Sends a String to the GPS module using send_GPS_Char_command function
     // s: the string to be transmitted
     
-    int i = 0;
-    while (s[i] != '\0') 
+    int i = sizeof(s);
+    for(int j = 0; j < i; j++)
     {
-        send_GPS_Char_command(s[i]);
-        i++;
+        send_GPS_Char_command(s[j]);
     }
-    
 }
 
 void send_GPS_Char_command(unsigned char command)
@@ -113,6 +111,9 @@ void init_UART(unsigned int baudRate)
     _RP6R = 0x0003;   //RB6->UART1:U1TX; See Table 10-3 on P109 of the datasheet
     _U1RXR = 10;   //RB10->UART1:U1RX;
     __builtin_write_OSCCONL(OSCCON | 0x40); // lock   PPS
+    
+    U1MODEbits.PDSEL = 0b00;
+    U1MODEbits.STSEL = 0;
     
     IFS0bits.U1RXIF = 0;
     IEC0bits.U1RXIE = 1;

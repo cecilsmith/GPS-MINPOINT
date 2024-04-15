@@ -31,23 +31,22 @@ void initGPS(void)
     init_UART(9600);
 
     // Set up GPS
-    send_GPS_Str_command("$PGKC030,3,1*2E<CR><LF>");        // System cold start 
-    send_GPS_Str_command("$PGKC115,1,0,0,0*2B<CR><LF>");    // Single GPS Mode (we're not going international)
-    send_GPS_Str_command("PGKC101,500*36<CR><LF>");        // Output NMEA messages every 0.5 seconds
-    send_GPS_Str_command("$PGKC115,1,0,0,0*2B<CR><LF>");   // Set the desired GNSS to GPS
-    send_GPS_Str_command("$PGKC147,9600*0E<CR><LF>");      // Set the baudrate to 9600
-    send_GPS_Str_command("$PGKC149,0,9600*1C<CR><LF>");    // Set the serial ports to accept NMEA data at 9600 bps
-    send_GPS_Str_command("$PGKC239,1*3A<CR><LF>");         // Turns SBAS on (improves accuracy)
-    send_GPS_Str_command("$PGKC242,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0*37<CR><LF>");   // output GLL and GST
-    initLocationAndTime();                                  // Speeds up cold starts
-    initModuleOutput();
+    send_GPS_Str_command("$PGKC030,3,1*2E\r\n");        // System cold start 
+    send_GPS_Str_command("$PGKC115,1,0,0,0*2B\r\n");    // Single GPS Mode (we're not going international)
+//    send_GPS_Str_command("PGKC101,500*36\r\n");        // Output NMEA messages every 0.5 seconds
+    send_GPS_Str_command("$PGKC115,1,0,0,0*2B\r\n");   // Set the desired GNSS to GPS
+//    send_GPS_Str_command("$PGKC147,9600*0E\r\n");      // Set the baudrate to 9600
+//    send_GPS_Str_command("$PGKC149,0,9600*1C\r\n");    // Set the serial ports to accept NMEA data at 9600 bps
+//    send_GPS_Str_command("$PGKC239,1*3A\r\n");         // Turns SBAS on (improves accuracy)
+    send_GPS_Str_command("$PGKC242,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0*37\r\n");   // output GLL and GST
+//    initLocationAndTime();                                  // Speeds up cold starts
 }
 
 void initLocationAndTime() 
 {
     char hexSum[2];
     char templateCmd[83] = "$PGKC639,";
-    strcat(templateCmd, *initialLatitudeLongitude);
+    strcat(templateCmd, *initialLatitudeLongitude); ///////////////// I changed this so that there is no *
     strcat(templateCmd, ",0,");
     strcat(templateCmd, *initialDate);
     strcat(templateCmd, ",0,0,0*");
@@ -230,12 +229,4 @@ double getLongitude()
     } 
 
     return -1*calculatedLongitude;
-}
-
-void initModuleOutput()
-{
-    for (int i = 0; i < 83; i++) 
-    {
-        moduleOutput[i] = '\0';
-    }
 }
