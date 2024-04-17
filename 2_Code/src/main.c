@@ -39,11 +39,12 @@ void timerInit()
     _T2IF = 0;
 
     T2CONbits.TON = 1;
-}
+}   
 
 void __attribute__((interrupt, auto_psv)) _T2Interrupt(void) {
     _T2IF = 0;
 }
+
 
 void delay_ms(unsigned int ms) {
     while (ms-- > 0) {
@@ -56,18 +57,14 @@ int main(int argc, char const *argv[])
 {
     /* code */
     setup();
-    timerInit();
+    //timerInit();
+    init_UART(9600);
     initGPS();
-    double thisShouldBeLatitude = 0;
+    delay_ms(3000);
     while(1)
     {
-        while(checkGLL() == 0)
-        {
-            get_GPS_Str(moduleOutput);
-            delay_ms(200);
-        }
         get_GPS_Str(moduleOutput);
-        thisShouldBeLatitude = getLatitude();
+        delay_ms(100);
     }
     return 0;
 }
