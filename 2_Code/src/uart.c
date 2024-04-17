@@ -49,8 +49,10 @@ void send_GPS_Char_command(unsigned char command)
     // command: the character to be transmitted
 
     while (!IFS0bits.U1TXIF);
+    while (U1STAbits.TRMT == 0);
     IFS0bits.U1TXIF = 0;
     U1TXREG = command;
+    while(U1STAbits.TRMT == 1);
 }
 
 unsigned char get_GPS_char(void)
@@ -61,7 +63,7 @@ unsigned char get_GPS_char(void)
     
     unsigned char NMEA;
 
-    while(front == back) ;
+    while(front == back && buffer[front] != '\n') ;
     NMEA = buffer[back++];
     if(back >= 170){
         back = 0;
@@ -80,7 +82,7 @@ unsigned char get_GPS_Str(unsigned char* s)
     
     int i = 0;
     
-    while(front == back);
+    //while(front == back);
     
     int last_front = front;
     while(last_front != back){
@@ -97,23 +99,28 @@ void init_UART(unsigned int baudRate)
 
     CLKDIVbits.RCDIV = 0;
     
-    _TRISB6 = 0;  // Sets pin 15 (RB6) to U1TX output pin
-    _TRISB10 = 1; // Sets pin 21 (RB10) to U1RX input pin
+    _TRISB6 = 0;                                // Sets pin 15 (RB6) to U1TX output pin
+    _TRISB10 = 1;                               // Sets pin 21 (RB10) to U1RX input pin
     
     U1MODEbits.UARTEN = 0;
     U1MODEbits.BRGH = 0;
-    U1BRG = 16000000 / (16 * baudRate) - 1; // 16 MHz / (16 * 9600) - 1 = 103.16666667
-    U1MODEbits.UEN = 0; // UEN<1:0>: UARTx Enable bits. 00 = UxTX and UxRX pins are enabled and used.
+    //U1BRG = 16000000 / (16 * baudRate) - 1;     // 16 MHz / (16 * 9600) - 1 = 103.16666667
+    U1BRG = 103;
+    U1MODEbits.UEN = 0;                         // UEN<1:0>: UARTx Enable bits. 00 = UxTX and UxRX pins are enabled and used.
     U1MODEbits.UARTEN = 1;
     
-    U1STAbits.UTXEN = 1; // Transmit is enabled, UxTX pin is controlled by UARTx
+    U1MODEbits.PDSEL = 0b00;                    // No parity bit
+    U1MODEbits.STSEL = 0b0;                     // One stop bit
+    
+    U1STAbits.UTXEN = 1;                        // Transmit is enabled, UxTX pin is controlled by UARTx
+    U1TXREG = '\r';                                // Clear Transmitter Register
     
     // Peripheral Pin Select 
-    __builtin_write_OSCCONL(OSCCON & 0xbf); // unlock PPS
-    _RP6R = 0x0003;   //RB6->UART1:U1TX; See Table 10-3 on P109 of the datasheet
-    _U1RXR = 10;   //RB10->UART1:U1RX;
-    __builtin_write_OSCCONL(OSCCON | 0x40); // lock   PPS
+    __builtin_write_OSCCONL(OSCCON & 0xbf);     // unlock PPS
+    _RP6R = 0x0003;                             //RB6->UART1:U1TX; See Table 10-3 on P109 of the datasheet
+    _U1RXR = 10;                                //RB10->UART1:U1RX;
+    __builtin_write_OSCCONL(OSCCON | 0x40);     // lock   PPS
     
-    IFS0bits.U1RXIF = 0;
-    IEC0bits.U1RXIE = 1;
+    IFS0bits.U1RXIF = 0;                        
+    IEC0bits.U1RXIE = 1;                          
 }
