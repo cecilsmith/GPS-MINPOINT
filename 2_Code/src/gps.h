@@ -11,15 +11,13 @@ extern "C"
     void initGPS(void);
     int checkSum(char *cmd);
     void initLocationAndTime();
-    double getRawLongitude();
-    double getRawLatitude();
     double getLongitude();
     double getLatitude();
     char getLongitudeDirection();
     char getLatitudeDirection();
-    int checkGLL();
+    void obtainGLL(int startingIndex);
     void initModuleOutput();
-
+    int validateModuleOutput();
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

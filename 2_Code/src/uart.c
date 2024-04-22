@@ -15,6 +15,8 @@ volatile unsigned char buffer[170]; // Circular buffer to store received data
 volatile unsigned char front = 0; // Index for adding data to front of the buffer
 volatile unsigned char back = 0; // Index for reading data from the back of the buffer
 
+extern volatile char moduleOutput[50];
+
 void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void)
 {
     // Updates the circular buffer with received UART data
@@ -26,6 +28,32 @@ void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void)
     buffer[front++] = U1RXREG;
     if(front >= 170){
         front = 0;
+    }
+    
+    for (int i = 0; i < 165; i++)
+    {
+        if (buffer[i] == '$' && buffer[i+1] == 'G' && buffer[i+2] == 'N' &&
+            buffer[i+3] == 'G' && buffer[i+4] == 'L' && buffer[i+5] == 'L' &&
+            (i + 51 < 170))
+        {
+            for (int k = i + 1; k < 170 - i; k++)
+            {
+                if (buffer[k] == '$')
+                {
+                    obtainGLL(i);
+                }
+            }
+            return;
+        }
+    }
+}
+
+void obtainGLL(int startingIndex)
+{
+    int k = 0;
+    for (int i = startingIndex; i < startingIndex + 53; i++)
+    {
+        moduleOutput[k++] = buffer[i];
     }
 }
 
