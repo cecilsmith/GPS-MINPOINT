@@ -21,7 +21,8 @@ extern "C" {
     unsigned char get_GPS_Str(unsigned char* s); // Retrieves a string of data from the circular buffer
                                                                 // Assigns the character data to the s pointer
     void init_UART(unsigned int baudRate);                          // Initializes UART communication settings
-
+    
+    void obtainGLL();
 #ifdef	__cplusplus
 }
 #endif

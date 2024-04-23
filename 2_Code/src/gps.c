@@ -7,21 +7,17 @@
 
 // Initialize the GPS's date with this!
 // In "year,month,day" format.
-char *initialDate = "2024,4,11";
+char *initialDate = "2024,4,23";
 
 // Initialize the GPS's position with this!
 // Within 6 decimal points of precision, and no
 // spaces between commas
-char *initialLatitudeLongitude = "45.176927,-93.227022";
-
+char *initialLatitudeLongitude = "44.974062,-93.232321";   // Keller Hall
+                                  
 
 // This string is used to store commands that are 
 // outputted by the module.
 volatile char moduleOutput[50];
-
-// This array stores the raw coordinates of the module
-double rawCoordinates[2]; 
-
 
 void initGPS(void)
 {
