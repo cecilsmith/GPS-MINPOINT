@@ -65,12 +65,13 @@ int main(int argc, char const *argv[])
     double testLong;
     char testLatDir;
     char testLongDir;
-    delay_ms(100000);
+    delay_ms(1000);
     int i = 0;
     while(1)
     {
         testLat = getLatitude();
         testLong = getLongitude();
+        delay_ms(1000);
     }
     return 0;
 }
