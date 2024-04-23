@@ -8,16 +8,15 @@ extern "C"
 {
 #endif /* __cplusplus */
 
-    void initGPS(void);
-    int checkSum(char *cmd);
-    void initLocationAndTime();
-    double getLongitude();
-    double getLatitude();
-    char getLongitudeDirection();
-    char getLatitudeDirection();
-    void obtainGLL(int startingIndex);
-    void initModuleOutput();
-    int validateModuleOutput();
+    void initGPS(void);                     // Initializes the module with specific settings
+    int checkSum(char *cmd);                // Calcultes the NMEA checksum for specific commands
+    void initLocationAndTime();             // Initializes the date and time for a faster boot
+    double getLongitude();                  // Returns a double of the longitude
+    double getLatitude();                   // Returns a double of the latitude
+    char getLongitudeDirection();           // Returns a char of the latitude direction
+    char getLatitudeDirection();            // Returns a char of the longitude direction    
+    void initModuleOutput();                // Initializes moduleOutput with all '\0'
+    int validateModuleOutput();             // Returns 1 if data is valid, 0 if not.
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -11,13 +11,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-volatile unsigned char buffer[170]; // Circular buffer to store received data
+volatile unsigned char buffer[83]; // Circular buffer to store received data
 volatile unsigned char front = 0; // Index for adding data to front of the buffer
 volatile unsigned char back = 0; // Index for reading data from the back of the buffer
 
-extern volatile char moduleOutput[50];
+volatile unsigned int statementFlag = 0;
+volatile unsigned char moduleOutput[83];
 
-void __attribute__((__interrupt__,__auto_psv__)) _U1RXInterrupt(void)
+
+void attribute((interrupt,auto_psv)) _U1RXInterrupt(void)
 {
     // Updates the circular buffer with received UART data
     // Clears the UART receive interrupt flag
@@ -77,10 +79,8 @@ void send_GPS_Char_command(unsigned char command)
     // command: the character to be transmitted
 
     while (!IFS0bits.U1TXIF);
-    while (U1STAbits.TRMT == 0);
     IFS0bits.U1TXIF = 0;
     U1TXREG = command;
-    while(U1STAbits.TRMT == 1);
 }
 
 unsigned char get_GPS_char(void)
@@ -91,33 +91,31 @@ unsigned char get_GPS_char(void)
     
     unsigned char NMEA;
 
-    while(front == back && buffer[front] != '\n') ;
+    while (front == back) ;
     NMEA = buffer[back++];
-    if(back >= 170){
+    if(back >= 82){
         back = 0;
     }
     return NMEA;
 }
 
-unsigned char get_GPS_Str(unsigned char* s)
-{
+void get_GPS_Str(unsigned char* s, unsigned int size){
     // Retrieves a string of data from the circular buffer
     // Assigns the character data to the s pointer
-    // s:           the retrieved string
-    // i:           the size of the string that is retrieved from the circular buffer
-    //              e.g) a string from 0 - 10 would be sized 11. 
-    // last_front:  Stores the front value in case of any interrupts during the while loop
+    // s: the retrieved string
+    // size: the size of the string that is expected to be received
+    // e.g) a string from 0 - 10 would be sized 11. 
     
-    int i = 0;
-    
-    //while(front == back);
-    
-    int last_front = front;
-    while(last_front != back){
-        s[i] = get_GPS_char();
-        i++;
+    for(int i = 0; i < size; i++){
+        s[i] = get_GPS_char;
     }
-    return i;
+}
+
+void get_Module_Output(unsigned char* s){
+    // Retrieves an NMEA statement from the statement buffer
+    for(int i = 0; i < 83; i++){
+        s[i] = moduleOutput[i];
+    }
 }
 
 void init_UART(unsigned int baudRate)
@@ -127,28 +125,23 @@ void init_UART(unsigned int baudRate)
 
     CLKDIVbits.RCDIV = 0;
     
-    _TRISB6 = 0;                                // Sets pin 15 (RB6) to U1TX output pin
-    _TRISB10 = 1;                               // Sets pin 21 (RB10) to U1RX input pin
+    _TRISB6 = 0;  // Sets pin 15 (RB6) to U1TX output pin
+    _TRISB10 = 1; // Sets pin 21 (RB10) to U1RX input pin
     
     U1MODEbits.UARTEN = 0;
     U1MODEbits.BRGH = 0;
-    //U1BRG = 16000000 / (16 * baudRate) - 1;     // 16 MHz / (16 * 9600) - 1 = 103.16666667
-    U1BRG = 103;
-    U1MODEbits.UEN = 0;                         // UEN<1:0>: UARTx Enable bits. 00 = UxTX and UxRX pins are enabled and used.
+    U1BRG = 16000000 / (16 * baudRate) - 1; // 16 MHz / (16 * 9600) - 1 = 103.16666667
+    U1MODEbits.UEN = 0; // UEN<1:0>: UARTx Enable bits. 00 = UxTX and UxRX pins are enabled and used.
     U1MODEbits.UARTEN = 1;
     
-    U1MODEbits.PDSEL = 0b00;                    // No parity bit
-    U1MODEbits.STSEL = 0b0;                     // One stop bit
-    
-    U1STAbits.UTXEN = 1;                        // Transmit is enabled, UxTX pin is controlled by UARTx
-    U1TXREG = '\r';                                // Clear Transmitter Register
+    U1STAbits.UTXEN = 1; // Transmit is enabled, UxTX pin is controlled by UARTx
     
     // Peripheral Pin Select 
-    __builtin_write_OSCCONL(OSCCON & 0xbf);     // unlock PPS
-    _RP6R = 0x0003;                             //RB6->UART1:U1TX; See Table 10-3 on P109 of the datasheet
-    _U1RXR = 10;                                //RB10->UART1:U1RX;
-    __builtin_write_OSCCONL(OSCCON | 0x40);     // lock   PPS
+    __builtin_write_OSCCONL(OSCCON & 0xbf); // unlock PPS
+    _RP6R = 0x0003;   //RB6->UART1:U1TX; See Table 10-3 on P109 of the datasheet
+    _U1RXR = 10;   //RB10->UART1:U1RX;
+    __builtin_write_OSCCONL(OSCCON | 0x40); // lock PPS
     
-    IFS0bits.U1RXIF = 0;                        
-    IEC0bits.U1RXIE = 1;                          
+    IFS0bits.U1RXIF = 0;
+    IEC0bits.U1RXIE = 1;
 }

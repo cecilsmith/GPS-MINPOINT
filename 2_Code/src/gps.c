@@ -93,49 +93,9 @@ int checkSum(char *cmd) {
     return checksum;
 }
 
-double getRawLatitude() 
-{
-    char latitude[15];
-    
-    // Copy latitude characters from moduleOutput until a comma is encountered
-    for (int i = 0; moduleOutput[i + 7] != ','; i++) {
-        latitude[i] = moduleOutput[i + 7];
-    }
-    // Null-terminate the latitude string
-    latitude[14] = '\0';
-
-    // Convert latitude string to double and return
-    return strtod(latitude, NULL);
-}
-
 char getLatitudeDirection()
 {
     return moduleOutput[18];
-}
-
-double getRawLongitude() {
-    int commaCounter = 0;
-    int longitudeIndex = 0;
-    char longitude[15];
-    
-    for (int i = 0; commaCounter < 4; i++)
-    {
-        if (commaCounter == 3)
-        {
-            longitude[longitudeIndex++] = moduleOutput[i];
-        }
-
-        if (moduleOutput[i] == ',')
-        {
-            commaCounter++;
-        }
-    }
-
-    // Null-terminate the latitude string
-    longitude[14] = '\0';
-
-    // Convert latitude string to double and return
-    return strtod(longitude, NULL);
 }
 
 char getLongitudeDirection()
@@ -150,7 +110,9 @@ double getLatitude()
     
     latitude += (moduleOutput[7] - '0')*10;
     latitude += (moduleOutput[8] - '0');
-    
+
+    // Floating point operations are extremely annoying to deal with
+    // To preserve precision, an array is used    
     minutes[0] = (moduleOutput[9]);
     minutes[1] = (moduleOutput[10]);
     minutes[2] = (moduleOutput[11]);
@@ -179,6 +141,8 @@ double getLongitude()
     longitude += (moduleOutput[21] - '0')*10;
     longitude += (moduleOutput[22] - '0');
     
+    // Floating point operations are extremely annoying to deal with
+    // To preserve precision, an array is used 
     minutes[0] = (moduleOutput[23]);
     minutes[1] = (moduleOutput[24]);
     minutes[2] = (moduleOutput[25]);
@@ -199,6 +163,8 @@ double getLongitude()
 
 void initModuleOutput()
 {
+    // Every GLL NMEA statement contains a specific index at which either
+    // a V or A is produced. That determines whether or not the given data is valid.
     for (int i = 0; i < 83; i++) 
     {
         moduleOutput[i] = '\0';
