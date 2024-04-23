@@ -9,7 +9,7 @@ extern "C"
 #endif /* __cplusplus */
 
     void initGPS(void);                     // Initializes the module with specific settings
-    int checkSum(char *cmd);                // Calcultes the NMEA checksum for specific commands
+    int checkSum(char *cmd);                // Calculates the NMEA checksum for specific commands
     void initLocationAndTime();             // Initializes the date and time for a faster boot
     double getLongitude();                  // Returns a double of the longitude
     double getLatitude();                   // Returns a double of the latitude
