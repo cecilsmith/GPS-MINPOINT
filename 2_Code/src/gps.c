@@ -17,7 +17,7 @@ char *initialLatitudeLongitude = "45.176927,-93.227022";
 
 // This string is used to store commands that are 
 // outputted by the module.
-char *moduleOutput[83];
+volatile char moduleOutput[50];
 
 // This array stores the raw coordinates of the module
 double rawCoordinates[2]; 
@@ -35,7 +35,7 @@ void initGPS(void)
     send_GPS_Str_command("$PGKC030,3,1*2E\r\n");        // System cold start 
     delay_ms(10);
     send_GPS_Str_command("$PGKC115,1,0,0,0*2B\r\n");    // Single GPS Mode (we're not going international)
-    delay_ms(10);
+    delay_ms(30);
     send_GPS_Str_command("$PGKC101,500*36\r\n");        // Output NMEA messages every 0.5 seconds
     delay_ms(10);
     send_GPS_Str_command("$PGKC115,1,0,0,0*2B\r\n");   // Set the desired GNSS to GPS
@@ -45,8 +45,9 @@ void initGPS(void)
     send_GPS_Str_command("$PGKC149,0,9600*1C\r\n");    // Set the serial ports to accept NMEA data at 9600 bps
     delay_ms(10);
     send_GPS_Str_command("$PGKC239,1*3A\r\n");         // Turns SBAS on (improves accuracy)
-    delay_ms(10);
+    delay_ms(30);
     send_GPS_Str_command("$PGKC242,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*36\r\n");   // output GLL and GST
+    delay_ms(30);
     initLocationAndTime();                                  // Speeds up cold starts
     initModuleOutput();
 }
@@ -92,162 +93,78 @@ int checkSum(char *cmd) {
     return checksum;
 }
 
-double getRawLatitude() 
-{
-    char latitude[15];
-    
-    // Copy latitude characters from moduleOutput until a comma is encountered
-    for (int i = 0; *moduleOutput[i + 7] != ','; i++) {
-        latitude[i] = *moduleOutput[i + 7];
-    }
-    // Null-terminate the latitude string
-    latitude[14] = '\0';
-
-    // Convert latitude string to double and return
-    return strtod(latitude, NULL);
-}
-
 char getLatitudeDirection()
 {
-    int commaCounter = 0;
-    char latitudeDirection;
-    
-    for (int i = 0; commaCounter < 3; i++)
-    {
-        if (*moduleOutput[i] == ',')
-        {
-            commaCounter++;
-            if (commaCounter == 2)
-            {
-                latitudeDirection = *moduleOutput[i + 1];
-            }
-        }
-    }
-
-    return latitudeDirection;
-}
-
-double getRawLongitude() {
-    int commaCounter = 0;
-    int longitudeIndex = 0;
-    char longitude[15];
-    
-    for (int i = 0; commaCounter < 4; i++)
-    {
-        if (commaCounter == 3)
-        {
-            longitude[longitudeIndex++] = *moduleOutput[i];
-        }
-
-        if (*moduleOutput[i] == ',')
-        {
-            commaCounter++;
-        }
-    }
-
-    // Null-terminate the latitude string
-    longitude[14] = '\0';
-
-    // Convert latitude string to double and return
-    return strtod(longitude, NULL);
+    return moduleOutput[18];
 }
 
 char getLongitudeDirection()
 {
-    int commaCounter = 0;
-    char longitudeDirection;
-    
-    for (int i = 0; commaCounter < 5; i++)
-    {
-        if (*moduleOutput[i] == ',')
-        {
-            commaCounter++;
-            if (commaCounter == 4)
-            {
-                longitudeDirection = *moduleOutput[i + 1];
-            }
-        }
-    }
-    
-    return longitudeDirection;
-}
-
-int checkGLL()
-{
-    if (*moduleOutput[3] == 'G' && *moduleOutput[4] == 'L' && *moduleOutput[5] == 'L') 
-    {
-        return 1;
-    }
-
-    return 0;
-}
+    return moduleOutput[32];
+} 
 
 double getLatitude()
 {
-    double calculatedLatitude;
-    char latitude[14];
-    char degrees[3]; 
-    char minutes[12];
+    double latitude = 0;
+    char minutes[8];
+    
+    latitude += (moduleOutput[7] - '0')*10;
+    latitude += (moduleOutput[8] - '0');
 
-    sprintf(latitude, "%f", getRawLatitude());
-
-    // Null-terminate the strings
-    latitude[13] = '\0';
-
-    // Extract degrees
-    degrees[0] = latitude[0];
-    degrees[1] = latitude[1];
-    degrees[2] = '\0'; // Null-terminate the string
-
-    // Extract minutes
-    for (int i = 2; i < 14; i++)
+    // Floating point operations are extremely annoying to deal with
+    // To preserve precision, an array is used    
+    minutes[0] = (moduleOutput[9]);
+    minutes[1] = (moduleOutput[10]);
+    minutes[2] = (moduleOutput[11]);
+    minutes[3] = (moduleOutput[12]);
+    minutes[4] = (moduleOutput[13]);
+    minutes[5] = (moduleOutput[14]);
+    minutes[6] = (moduleOutput[15]);
+    minutes[7] = (moduleOutput[16]);
+    
+    double extractedMinutes = atof(minutes);
+    latitude += (extractedMinutes/60); 
+    if (getLatitudeDirection() == 'S')
     {
-        minutes[i - 2] = latitude[i];
+        latitude *= -1;
     }
-
-    // Convert degrees and minutes to double and calculate latitude
-    if (getLatitudeDirection() == 'N')
-    {
-        calculatedLatitude = strtod(degrees, NULL) + (strtod(minutes, NULL) / 60);
-    } 
-
-    return -1*calculatedLatitude;
+    return latitude;
 }
 
 double getLongitude()
 {
-    double calculatedLongitude;
-    char longitude[14];
-    char degrees[3]; 
-    char minutes[12];
-
-    sprintf(longitude, "%f", getRawLongitude());
-
-    // Null-terminate the strings
-    longitude[13] = '\0';
-
-    // Extract degrees
-    degrees[0] = longitude[0];
-    degrees[1] = longitude[1];
-    degrees[2] = '\0'; // Null-terminate the string
-
-    // Extract minutes
-    for (int i = 2; i < 14; i++)
+    double longitude = 0;
+    char minutes[8];
+    
+    
+    longitude += (moduleOutput[20] - '0')*100;
+    longitude += (moduleOutput[21] - '0')*10;
+    longitude += (moduleOutput[22] - '0');
+    
+    // Floating point operations are extremely annoying to deal with
+    // To preserve precision, an array is used 
+    minutes[0] = (moduleOutput[23]);
+    minutes[1] = (moduleOutput[24]);
+    minutes[2] = (moduleOutput[25]);
+    minutes[3] = (moduleOutput[26]);
+    minutes[4] = (moduleOutput[27]);
+    minutes[5] = (moduleOutput[28]);
+    minutes[6] = (moduleOutput[29]);
+    minutes[7] = (moduleOutput[30]);
+    
+    double extractedMinutes = atof(minutes);
+    longitude += (extractedMinutes/60);   
+    if (getLongitudeDirection() == 'W')
     {
-        minutes[i - 2] = longitude[i];
+        longitude *= -1;
     }
-
-    // Convert degrees and minutes to double and calculate longitude
-    if (getLongitudeDirection() == 'E')
-    {
-        calculatedLongitude = strtod(degrees, NULL) + (strtod(minutes, NULL) / 60);
-    } 
-
-    return -1*calculatedLongitude;
+    return longitude;
 }
 
 void initModuleOutput()
 {
+    // Every GLL NMEA statement contains a specific index at which either
+    // a V or A is produced. That determines whether or not the given data is valid.
     for (int i = 0; i < 83; i++) 
     {
         moduleOutput[i] = '\0';

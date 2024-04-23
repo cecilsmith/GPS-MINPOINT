@@ -19,7 +19,7 @@
 
 #define FCY 16000000L // Define system clock frequency (16MHz)
 
-extern char *moduleOutput[83];
+extern volatile char moduleOutput[50];
 
 void setup(void)
 {
@@ -60,11 +60,17 @@ int main(int argc, char const *argv[])
     //timerInit();
     init_UART(9600);
     initGPS();
-    delay_ms(3000);
+    initModuleOutput();
+    double testLat;
+    double testLong;
+    char testLatDir;
+    char testLongDir;
+    delay_ms(100000);
+    int i = 0;
     while(1)
     {
-        get_GPS_Str(moduleOutput);
-        delay_ms(100);
+        testLat = getLatitude();
+        testLong = getLongitude();
     }
     return 0;
 }
