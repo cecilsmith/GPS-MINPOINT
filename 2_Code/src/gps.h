@@ -17,6 +17,7 @@ extern "C"
     char getLatitudeDirection();            // Returns a char of the longitude direction    
     void initModuleOutput();                // Initializes moduleOutput with all '\0'
     int validateModuleOutput();             // Returns 1 if data is valid, 0 if not.
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

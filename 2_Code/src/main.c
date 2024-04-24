@@ -1,6 +1,7 @@
 #include "xc.h" 
 #include "uart.h"
 #include "gps.h"
+#include "lcd.h"
 
 // CW1: FLASH CONFIGURATION WORD 1 (see PIC24 Family Reference Manual 24.1)
 #pragma config ICS = PGx1   // Comm Channel Select (Emulator EMUC1/EMUD1 pins are shared with PGC1/PGD1)
@@ -26,6 +27,14 @@ void setup(void)
     // Execute once code goes here
     CLKDIVbits.RCDIV = 0; // Set RCDIV=1:1 (default 2:1) 32MHz or FCY/2=16M
     AD1PCFG = 0x9FFF;     // sets all pins to digital I/O
+    
+    TMR1 = 0;
+    T1CON = 0;
+    T1CONbits.TCKPS = 0b10;
+    PR1 = 24999;
+    T1CONbits.TON = 1;
+    _T1IE = 1;
+    _T1IF = 0;
 }
 
 void timerInit()
@@ -61,17 +70,19 @@ int main(int argc, char const *argv[])
     init_UART(9600);
     initGPS();
     initModuleOutput();
-    double testLat;
-    double testLong;
-    char testLatDir;
-    char testLongDir;
+    lcd_init();
+    setTargetDestination(44.9758, 93.2172);
     delay_ms(1000);
-    int i = 0;
     while(1)
     {
-        testLat = getLatitude();
-        testLong = getLongitude();
-        delay_ms(1000);
+        while(_T1IF == 0);
+        _T1IF = 0;
+        double disValue;
+        char disStr[20];
+        lcd_setCursor(0,0);
+    	disValue = getDistanceToDestination();
+    	sprintf(disStr, "%6.4f", disValue);
+        lcd_printStr(disStr);
     }
     return 0;
 }

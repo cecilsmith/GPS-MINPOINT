@@ -94,7 +94,7 @@ char getLatitudeDirection()
     return moduleOutput[18];
 }
 
-char getLongitudeDirection()
+char 
 {
     return moduleOutput[32];
 } 
@@ -166,3 +166,4 @@ void initModuleOutput()
         moduleOutput[i] = '\0';
     }
 }
+
