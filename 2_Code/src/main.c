@@ -2,6 +2,7 @@
 #include "uart.h"
 #include "gps.h"
 #include "lcd.h"
+#include "calculations.h"
 
 #include <p24FJ64GA002.h>
 #include <stdio.h>

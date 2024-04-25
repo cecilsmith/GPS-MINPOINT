@@ -12,7 +12,6 @@
 
 #include "xc.h"
 #include "stdint.h"
-#include "gps.h"
 
 void delay_ms(unsigned int ms)
 {
