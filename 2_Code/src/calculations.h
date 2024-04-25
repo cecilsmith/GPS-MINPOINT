@@ -10,8 +10,9 @@ extern "C"
     void setTargetDestination(double latitude, double longitude); // Sets the target destination.
     void getCurrentLocation();                                    // Gets current location
     double dToR(double degrees);
-    void distanceFinder();
-    double getDistanceToDestination();
+    double rToD(double radians);
+    double distanceFinder();
+    double bearingFinder();
 
 #ifdef __cplusplus
 }
