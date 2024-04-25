@@ -12,11 +12,6 @@ extern "C"
     void lcd_setCursor(char x, char y);
     void lcd_printChar(char myChar);
     void lcd_printStr(const char s[]);
-    void setTargetDestination(double latitude, double longitude); // Sets the target destination.
-    void getCurrentLocation();                                    // Gets current location
-    double dToR(double degrees);
-    void distanceFinder();
-    double getDistanceToDestination();
 
 #ifdef __cplusplus
 }

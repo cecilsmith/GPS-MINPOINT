@@ -7,10 +7,11 @@ extern "C"
 #endif
 
     // Function declarations
-    void add(int a, int b);
-    void subtract(int a, int b);
-    void multiply(int a, int b);
-    void divide(int a, int b);
+    void setTargetDestination(double latitude, double longitude); // Sets the target destination.
+    void getCurrentLocation();                                    // Gets current location
+    double dToR(double degrees);
+    void distanceFinder();
+    double getDistanceToDestination();
 
 #ifdef __cplusplus
 }
