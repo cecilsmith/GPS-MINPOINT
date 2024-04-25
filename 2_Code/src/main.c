@@ -80,8 +80,8 @@ int main(int argc, char const *argv[])
         double disValue;
         char disStr[20];
         lcd_setCursor(0,0);
-    	disValue = getDistanceToDestination();
-    	sprintf(disStr, "%6.4f", disValue);
+        disValue = distanceFinder();
+        sprintf(disStr, "%6.4f", disValue);
         lcd_printStr(disStr);
     }
     return 0;
