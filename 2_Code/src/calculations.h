@@ -12,14 +12,9 @@ extern "C"
     void getCurrentLocation();
     // Convert degrees of the module to radians
     double dToR(double degrees);
-<<<<<<< Updated upstream
     double rToD(double radians);
-    double distanceFinder();
-    double bearingFinder();
-=======
-    // Find the distance to destination using Haversine formula
     double distanceFinder(void);
->>>>>>> Stashed changes
+    double bearingFinder(void);
 
 #ifdef __cplusplus
 }
