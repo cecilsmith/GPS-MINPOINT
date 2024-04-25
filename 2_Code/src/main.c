@@ -3,6 +3,7 @@
 #include "gps.h"
 #include "lcd.h"
 #include "calculations.h"
+#include "utils.h"
 
 #include <p24FJ64GA002.h>
 #include <stdio.h>
@@ -59,14 +60,6 @@ void timerInit()
 
 void __attribute__((interrupt, auto_psv)) _T2Interrupt(void) {
     _T2IF = 0;
-}
-
-
-void delay_ms(unsigned int ms) {
-    while (ms-- > 0) {
-        asm("repeat #15998");
-        asm("nop");
-    }
 }
 
 int main(int argc, char const *argv[])

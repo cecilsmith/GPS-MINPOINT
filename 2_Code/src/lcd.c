@@ -12,16 +12,7 @@
 
 #include "xc.h"
 #include "stdint.h"
-
-void delay_ms(unsigned int ms)
-{
-    // Delay in milliseconds
-    while (ms-- > 0)
-    {
-        asm("repeat #15998");
-        asm("nop");
-    }
-}
+#include "utils.h"
 
 void lcd_cmd(char command)
 {

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "gps.h"
 #include "uart.h"
+#include "utils.h"
 
 // Initialize the GPS's date with this!
 // In "year,month,day" format.
