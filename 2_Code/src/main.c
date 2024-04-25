@@ -69,9 +69,9 @@ int main(int argc, char const *argv[])
     int i = 0;
     while(1)
     {
+        while(!validateModuleOutput());
         testLat = getLatitude();
         testLong = getLongitude();
-        delay_ms(1000);
     }
     return 0;
 }
