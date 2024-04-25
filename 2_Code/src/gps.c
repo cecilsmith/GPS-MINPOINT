@@ -166,3 +166,4 @@ void initModuleOutput()
         moduleOutput[i] = '\0';
     }
 }
+
