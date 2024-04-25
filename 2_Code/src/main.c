@@ -38,51 +38,76 @@ void setup(void)
     
     TMR1 = 0;
     T1CON = 0;
-    T1CONbits.TCKPS = 0b10;
-    PR1 = 24999;
+    T1CONbits.TCKPS = 0b11;
+    PR1 = 62499; // 1 second
     T1CONbits.TON = 1;
     _T1IE = 1;
     _T1IF = 0;
-}
-
-void timerInit()
-{
-    T2CON = 0;
-    T2CONbits.TCKPS = 0b11;
-    PR2 = 62499; //1 second
-    TMR2 = 0;
-
-    _T2IE = 1;
-    _T2IF = 0;
-
-    T2CONbits.TON = 1;
-}   
-
-void __attribute__((interrupt, auto_psv)) _T2Interrupt(void) {
-    _T2IF = 0;
 }
 
 int main(int argc, char const *argv[])
 {
     /* code */
     setup();
-    //timerInit();
     init_UART(9600);
     initGPS();
     initModuleOutput();
     lcd_init();
     setTargetDestination(44.9758, 93.2172);
     delay_ms(1000);
+    bool LCD_flag = 0;
     while(1)
     {
         while(_T1IF == 0);
         _T1IF = 0;
-        double disValue;
+
         char disStr[20];
-        lcd_setCursor(0,0);
-        disValue = distanceFinder();
-        sprintf(disStr, "%6.4f", disValue);
-        lcd_printStr(disStr);
+
+        if (LCD_flag)
+        {
+            double disValueLine1 = getLatitude();
+            double disValueLine2 = getLongitude();
+            lcd_setCursor(0, 0);
+            if (disValueLine1 < 0)
+            {
+                sprintf(disStr, "%7.3fS", abs(disValueLine1));
+            }
+            else
+            {
+                sprintf(disStr, "%7.3fN", disValueLine1);
+            }
+            lcd_printStr(disStr);
+
+            lcd_setCursor(0, 1);
+            if (disValueLine2 < 0)
+            {
+                sprintf(disStr, "%7.3fW", abs(disValueLine2));
+            }
+            else
+            {
+                sprintf(disStr, "%7.3fE", disValueLine2);
+            }
+            lcd_printStr(disStr);
+        }
+        else
+        {
+            // Write the distance screen
+            lcd_setCursor(0, 0);
+            lcd_printStr("DISTANCE");
+            double disValueLine2;
+            disValueLine2 = distanceFinder();
+            if (disValueLine2 > 10000)
+            {
+                sprintf(disStr, "%6dkm", int(disValueLine2 / 1000));
+            }
+            else
+            {
+                sprintf(disStr, "%7.1fm", disValueLine2);
+            }
+            lcd_setCursor(0, 1);
+            lcd_printStr(disStr);
+        }
+        LCD_flag = !LCD_flag;
     }
     return 0;
 }
