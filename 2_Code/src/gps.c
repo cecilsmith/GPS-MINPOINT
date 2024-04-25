@@ -166,3 +166,77 @@ void initModuleOutput()
         moduleOutput[i] = '\0';
     }
 }
+
+int validateModuleOutput()
+{
+    // Check if the beginning of the statement is valid
+    if (moduleOutput[0] != '$' && moduleOutput[1] != 'G' && moduleOutput[2] != 'N' &&
+        moduleOutput[3] != 'G' && moduleOutput[4] != 'L' && moduleOutput[5] != 'L')
+    {
+        return 0;
+    }
+    
+    // Check if all of the commas are in the right place
+    if (moduleOutput[6] != ',' && moduleOutput[17] != ',' && moduleOutput[19] != ',' &&
+        moduleOutput[31] != ',' && moduleOutput[33] != ',' && moduleOutput[44] != ',' &&
+        moduleOutput[46] != ',')
+    {
+        return 0;
+    }
+    
+    // Check if all of the periods are in the right place
+    if (moduleOutput[11] != '.' && moduleOutput[25] != '.' && moduleOutput[40] != '.')
+    {
+        return 0;
+    }
+    
+    // Check if these various positions are integers
+    for (int i = 7; i <= 10; i++)
+    {
+        if (!(moduleOutput[i] - '0' < 10 && moduleOutput[i] - '0' >= 0))
+        {
+            return 0;
+        }
+    }
+    
+    for (int i = 12; i <= 16; i++)
+    {
+        if (!(moduleOutput[i] - '0' < 10 && moduleOutput[i] - '0' >= 0))
+        {
+            return 0;
+        }
+    }
+    
+    for (int i = 20; i <= 24; i++)
+    {
+        if (!(moduleOutput[i] - '0' < 10 && moduleOutput[i] - '0' >= 0))
+        {
+            return 0;
+        }
+    }
+    
+    for (int i = 26; i <= 30; i++)
+    {
+        if (!(moduleOutput[i] - '0' < 10 && moduleOutput[i] - '0' >= 0))
+        {
+            return 0;
+        }
+    }
+    
+    for (int i = 41; i <= 43; i++)
+    {
+        if (!(moduleOutput[i] - '0' < 10 && moduleOutput[i] - '0' >= 0))
+        {
+            return 0;
+        }
+    }
+    
+    // If these final values are what they are supposed to be, return true
+    if ((moduleOutput[18] == 'N' || moduleOutput[18] == 'S') && (moduleOutput[32] == 'W' || moduleOutput[32] == 'E') 
+         && moduleOutput[45] == 'A' && moduleOutput[47] == 'A' && moduleOutput[48] == '*')
+    {
+        return 1;
+    }
+    
+    return 0;
+}
