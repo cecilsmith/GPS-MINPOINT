@@ -1,6 +1,15 @@
 #include "xc.h" 
 #include "uart.h"
 #include "gps.h"
+#include "lcd.h"
+#include "calculations.h"
+#include "utils.h"
+
+#include <p24FJ64GA002.h>
+#include <stdio.h>
+#include <string.h>
+#include "stdint.h"
+
 
 // CW1: FLASH CONFIGURATION WORD 1 (see PIC24 Family Reference Manual 24.1)
 #pragma config ICS = PGx1   // Comm Channel Select (Emulator EMUC1/EMUD1 pins are shared with PGC1/PGD1)
@@ -26,52 +35,79 @@ void setup(void)
     // Execute once code goes here
     CLKDIVbits.RCDIV = 0; // Set RCDIV=1:1 (default 2:1) 32MHz or FCY/2=16M
     AD1PCFG = 0x9FFF;     // sets all pins to digital I/O
-}
-
-void timerInit()
-{
-    T2CON = 0;
-    T2CONbits.TCKPS = 0b11;
-    PR2 = 62499; //1 second
-    TMR2 = 0;
-
-    _T2IE = 1;
-    _T2IF = 0;
-
-    T2CONbits.TON = 1;
-}   
-
-void __attribute__((interrupt, auto_psv)) _T2Interrupt(void) {
-    _T2IF = 0;
-}
-
-
-void delay_ms(unsigned int ms) {
-    while (ms-- > 0) {
-        asm("repeat #15998");
-        asm("nop");
-    }
+    
+    TMR1 = 0;
+    T1CON = 0;
+    T1CONbits.TCKPS = 0b11;
+    PR1 = 62499; // 1 second
+    _T1IF = 0;
+    T1CONbits.TON = 1;
+//    _T1IE = 0;
 }
 
 int main(int argc, char const *argv[])
 {
     /* code */
     setup();
-    //timerInit();
     init_UART(9600);
     initGPS();
-    initModuleOutput();
-    double testLat;
-    double testLong;
-    char testLatDir;
-    char testLongDir;
+    lcd_init();
+    // Goldy Gopher Located at (44.97309399636732, -93.23485794557575)
+    setTargetDestination(45.173129, -93.230448);
     delay_ms(1000);
-    int i = 0;
+    char LCD_flag = 0;
     while(1)
     {
-        while(!validateModuleOutput());
-        testLat = getLatitude();
-        testLong = getLongitude();
+        while(validateModuleOutput() == 0);
+        delay_ms(750);
+
+        char disStr[20];
+
+        if (LCD_flag)
+        {
+            double disValueLine1 = getLatitude();
+            double disValueLine2 = getLongitude();
+            lcd_setCursor(0, 0);
+            if (disValueLine1 < 0)
+            {
+                sprintf(disStr, "%7.3fS", (-1*disValueLine1));
+            }
+            else
+            {
+                sprintf(disStr, "%7.3fN", disValueLine1);
+            }
+            lcd_printStr(disStr);
+            
+            lcd_setCursor(0, 1);
+            if (disValueLine2 < 0)
+            {
+                sprintf(disStr, "%7.3fW", (-1*disValueLine2));
+            }
+            else
+            {
+                sprintf(disStr, "%7.3fE", disValueLine2);
+            }
+            lcd_printStr(disStr);
+        }
+        else
+        {
+            // Write the distance screen
+            lcd_setCursor(0, 0);
+            lcd_printStr("DISTANCE");
+            double disValueLine2;
+            disValueLine2 = distanceFinder();
+            if (disValueLine2 > 10000)
+            {
+                sprintf(disStr, "%6dkm", (int)(disValueLine2 / 1000));
+            }
+            else
+            {
+                sprintf(disStr, "%7.1fm", disValueLine2);
+            }
+            lcd_setCursor(0, 1);
+            lcd_printStr(disStr);
+        }
+        LCD_flag = !LCD_flag;
     }
     return 0;
 }
