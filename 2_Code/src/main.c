@@ -120,7 +120,7 @@ int main(int argc, char const *argv[])
 
             if (disValueLine2 > 10000)
             {
-                sprintf(disStr, "%6dkm", (int)(disValueLine2 / 1000)); // Format distance in km
+                sprintf(disStr, "%6.1fkm", (float)(disValueLine2 / 1000.00)); // Format distance in km
             }
             else
             {

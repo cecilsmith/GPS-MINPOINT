@@ -57,7 +57,7 @@ void obtainGLL(void)
     for (int i = 0; i < 165; i++)
     {
         // Check for GLL sentence start
-        if (buffer[i] == '' && buffer[i + 1] == 'G' && buffer[i + 2] == 'N' &&
+        if (buffer[i] == '$' && buffer[i + 1] == 'G' && buffer[i + 2] == 'N' &&
             buffer[i + 3] == 'G' && buffer[i + 4] == 'L' && buffer[i + 5] == 'L' &&
             (i + 51 < 170))
         {
@@ -65,7 +65,7 @@ void obtainGLL(void)
             for (int k = i + 1; k < 170 - i; k++)
             {
                 // Check for end of sentence
-                if (buffer[k] == '')
+                if (buffer[k] == '$')
                 {
                     // Copy sentence to output
                     int q = 0;
