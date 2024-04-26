@@ -1,0 +1,54 @@
+Use this online compiler: https://www.onlinegdb.com/online_c_compiler
+Copy and paste the code below:
+
+#include <stdio.h>
+#include <math.h>
+
+// Global variables for current and destination coordinates
+double currLatitude = 44.975755, currLongitude = -93.217189;
+double destLatitude = 44.973828, destLongitude = -93.224746;
+
+// Function to update current location (mocked for testing)
+void getCurrentLocation(double* lat, double* lon) {
+    *lat = currLatitude;
+    *lon = currLongitude;
+}
+
+// Function to convert degrees to radians
+double dToR(double degrees) {
+    // Convert degrees to radians
+    return degrees / 180.0 * M_PI;
+}
+
+// Function to calculate the distance between two points using Haversine formula
+double distanceFinder() {
+    // Radius of the Earth in kilometers
+    const double R = 6371.0;
+
+    // Convert latitude and longitude from degrees to radians
+    double currLatRad = dToR(currLatitude);
+    double currLonRad = dToR(currLongitude);
+    double destLatRad = dToR(destLatitude);
+    double destLonRad = dToR(destLongitude);
+
+    // Haversine formula
+    double dLat = destLatRad - currLatRad;
+    double dLon = destLonRad - currLonRad;
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+               cos(currLatRad) * cos(destLatRad) *
+               sin(dLon / 2) * sin(dLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = R * c;
+
+    return distance;
+}
+
+int main() {
+    // Calculate the distance to the destination
+    double distance = distanceFinder();
+
+    // Output the calculated distance
+    printf("Distance to destination: %.2lf kilometers\n", distance);
+
+    return 0;
+}
