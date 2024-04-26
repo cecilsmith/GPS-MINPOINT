@@ -1,3 +1,10 @@
+/*
+ * Course Number: EE2361
+ * Term: Spring 2024
+ * Lab/assignment number: Final Project
+ * Short Program Description: Contains functions that are commonly used utilities.
+ */
+
 #ifndef UTILS_H
 #define UTILS_H
 
@@ -6,7 +13,7 @@ extern "C"
 {
 #endif
 
-    // Function declarations
+    // Delays for the specified number of microseconds
     void delay_ms(unsigned int ms);
 
 #ifdef __cplusplus
