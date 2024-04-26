@@ -61,7 +61,7 @@ double rToD(double radians)
 }
 
 /**
- * Calculates distance between current location and destination.
+ * Calculates distance between current location and destination using the Haverside formula.
  *
  * @return The distance between current location and destination in meters
  */
