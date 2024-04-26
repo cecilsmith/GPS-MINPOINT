@@ -55,7 +55,7 @@ int main(int argc, char const *argv[])
     lcd_init();
     setTargetDestination(44.9758, 93.2172);
     delay_ms(1000);
-    bool LCD_flag = 0;
+    char LCD_flag = 0;
     while(1)
     {
         while(_T1IF == 0);
@@ -98,7 +98,7 @@ int main(int argc, char const *argv[])
             disValueLine2 = distanceFinder();
             if (disValueLine2 > 10000)
             {
-                sprintf(disStr, "%6dkm", int(disValueLine2 / 1000));
+                sprintf(disStr, "%6dkm", (int) disValueLine2 / 1000);
             }
             else
             {
@@ -107,7 +107,7 @@ int main(int argc, char const *argv[])
             lcd_setCursor(0, 1);
             lcd_printStr(disStr);
         }
-        LCD_flag = !LCD_flag;
+        LCD_flag = 1 - LCD_flag;
     }
     return 0;
 }
