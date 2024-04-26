@@ -52,6 +52,7 @@ int main(int argc, char const *argv[])
     init_UART(9600);
     initGPS();
     lcd_init();
+    // Goldy Gopher Located at (44.97309399636732, -93.23485794557575)
     setTargetDestination(45.173129, -93.230448);
     delay_ms(1000);
     char LCD_flag = 0;
