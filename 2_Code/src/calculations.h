@@ -31,6 +31,9 @@ extern "C"
     // Calculates the bearing/heading between the current location and target destination in radians
     double bearingFinder(void);
 
+    // Returns the bearing between the current location and target destination in degrees
+    char *bearingDirection(double bearing);
+
 #ifdef __cplusplus
 }
 #endif

@@ -92,7 +92,7 @@ double distanceFinder(void)
 /**
  * Calculates bearing to destination
  *
- * @return The bearing to destination in degrees
+ * @return The bearing to destination in (0-360) degrees
  */
 double bearingFinder()
 {
@@ -100,18 +100,71 @@ double bearingFinder()
     getCurrentLocation();
     double X, Y;
 
-    // If both latitudes are negative or positive
-    if ((destLatitude < 0 && currLatitude < 0) || (destLatitude > 0 && currLatitude > 0))
+    // Normalize longitudes to ensure they fall within the range [-180, 180] degrees
+    double deltaLon = destLongitude - currLongitude;
+
+    // Calcuate delta longitude in range [-180, 180]
+    if (deltaLon > 180.0)
     {
-        // There is no need for a offset by 360 degrees since the longitudes are already normalized
-        X = cos(dToR(destLatitude)) * sin(dToR(abs(currLongitude - destLongitude)));
-        Y = cos(dToR(currLatitude)) * sin(dToR(destLatitude)) - sin(dToR(currLatitude)) * cos(dToR(destLatitude)) * cos(dToR(abs(currLongitude - destLongitude)));
+        deltaLon -= 360.0;
     }
-    else
+    else if (deltaLon < -180.0)
     {
-        X = cos(dToR(destLatitude)) * sin(dToR(360 - abs(currLongitude - destLongitude)));
-        Y = cos(dToR(currLatitude)) * sin(dToR(destLatitude)) - sin(dToR(currLatitude)) * cos(dToR(destLatitude)) * cos(dToR(360 - abs(currLongitude - destLongitude)));
+        deltaLon += 360.0;
     }
 
-    return rToD(atan2(X, Y));
+    // Calculate components of the bearing formula
+    X = cos(dToR(destLatitude)) * sin(dToR(deltaLon));
+    Y = cos(dToR(currLatitude)) * sin(dToR(destLatitude)) - sin(dToR(currLatitude)) * cos(dToR(destLatitude)) * cos(dToR(deltaLon));
+
+    // Calculate bearing in radians and convert it to degrees
+    double degrees = rToD(atan2(X, Y));
+    if (degrees < 0)
+    {
+        // Normalize to 0-360 degrees
+        degrees += 360;
+    }
+    return degrees;
+}
+
+/**
+ * Determines the cardinal direction based on the given bearing in degrees.
+ *
+ * @param bearing The bearing in degrees.
+ * @return The cardinal direction as a string (e.g. "N", "NE", "E", "SE", "S", "SW", "W", "NW").
+ */
+char *bearingDirection(double bearing)
+{
+    if (bearing >= 337.5 || bearing < 22.5)
+    {
+        return "N ";
+    }
+    else if (bearing >= 22.5 && bearing < 67.5)
+    {
+        return "NE";
+    }
+    else if (bearing >= 67.5 && bearing < 112.5)
+    {
+        return "E ";
+    }
+    else if (bearing >= 112.5 && bearing < 157.5)
+    {
+        return "SE";
+    }
+    else if (bearing >= 157.5 && bearing < 202.5)
+    {
+        return "S ";
+    }
+    else if (bearing >= 202.5 && bearing < 247.5)
+    {
+        return "SW";
+    }
+    else if (bearing >= 247.5 && bearing < 292.5)
+    {
+        return "W ";
+    }
+    else if (bearing >= 292.5 && bearing < 337.5)
+    {
+        return "NW";
+    }
 }
