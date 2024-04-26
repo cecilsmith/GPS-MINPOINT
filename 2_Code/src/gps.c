@@ -8,12 +8,12 @@
 
 // Initialize the GPS's date with this!
 // In "year,month,day" format.
-char *initialDate = "2024,4,23";
+char *initialDate = "2024,4,25";
 
 // Initialize the GPS's position with this!
 // Within 6 decimal points of precision, and no
 // spaces between commas
-char *initialLatitudeLongitude = "44.974062,-93.232321";   // Keller Hall
+char *initialLatitudeLongitude = "45.181479,-93.224900";   // Keller Hall
                                   
 
 // This string is used to store commands that are 
@@ -102,6 +102,7 @@ char getLongitudeDirection()
 
 double getLatitude()
 {
+    while(!(validateModuleOutput()));
     double latitude = 0;
     char minutes[8];
     
@@ -130,6 +131,7 @@ double getLatitude()
 
 double getLongitude()
 {
+    while(!(validateModuleOutput()));
     double longitude = 0;
     char minutes[8];
     

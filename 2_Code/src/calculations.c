@@ -23,20 +23,20 @@ void getCurrentLocation()
     currLongitude = getLongitude();
 }
 
-double dToR(double degrees)
-{
-    // Convert degrees of the module to radians
-    return degrees / 180.0 * M_PI;
+double dToR(double degrees) {
+    // Convert degrees to radians
+    return (degrees / 180.0) * M_PI;
 }
 
 double rToD(double radians)
 {
-    return radians * 180.0 / M_PI;
+    return (radians * 180.0) / M_PI;
 }
 
 double distanceFinder() {
+    getCurrentLocation();
     // Radius of the Earth in kilometers
-    const double R = 6371.0;
+    const double R = 6371000.0;
 
     // Convert latitude and longitude from degrees to radians
     double currLatRad = dToR(currLatitude);
