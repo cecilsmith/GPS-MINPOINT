@@ -51,9 +51,8 @@ int main(int argc, char const *argv[])
     setup();
     init_UART(9600);
     initGPS();
-    initModuleOutput();
     lcd_init();
-    setTargetDestination(44.9758, -93.2172);
+    setTargetDestination(44.975755, -93.217189);
     delay_ms(1000);
     char LCD_flag = 0;
     while(1)

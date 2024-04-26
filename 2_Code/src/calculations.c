@@ -18,6 +18,7 @@ void setTargetDestination(double latitude, double longitude)
 void getCurrentLocation()
 {
     // Gets current location from GPS module
+    while(!(validateModuleOutput()));
     currLatitude = getLatitude();
     currLongitude = getLongitude();
 }
@@ -33,15 +34,26 @@ double rToD(double radians)
     return radians * 180.0 / M_PI;
 }
 
-double distanceFinder(void)
-{
-    // Calculates distance to destination
-    // Haversine Formula: 3440.1 * arccos((sin(lat A) * sin(lat B)) + cos(lat A) * cos(lat B) * cos(long A - long B))
-    double distance = 0;
-    getCurrentLocation();
-    double dinNM = 3440.1 * acos((sin(dToR(currLatitude)) * sin(dToR(destLatitude))) + cos(dToR(currLatitude)) * cos(dToR(destLatitude)) * cos(dToR(currLongitude) - dToR(destLongitude)));
-    distance = 1852.00 * dinNM;
-    return distance; // In meters (conversion)
+double distanceFinder() {
+    // Radius of the Earth in kilometers
+    const double R = 6371.0;
+
+    // Convert latitude and longitude from degrees to radians
+    double currLatRad = dToR(currLatitude);
+    double currLonRad = dToR(currLongitude);
+    double destLatRad = dToR(destLatitude);
+    double destLonRad = dToR(destLongitude);
+
+    // Haversine formula
+    double dLat = destLatRad - currLatRad;
+    double dLon = destLonRad - currLonRad;
+    double a = sin(dLat / 2) * sin(dLat / 2) +
+               cos(currLatRad) * cos(destLatRad) *
+               sin(dLon / 2) * sin(dLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    double distance = R * c;
+
+    return distance;
 }
 
 double bearingFinder()
