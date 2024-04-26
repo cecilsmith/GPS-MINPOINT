@@ -137,11 +137,11 @@ int main(int argc, char const *argv[])
             // Display bearing value on LCD if LCD_flag is false
 
             lcd_setCursor(0, 0);     // Set cursor to line 1
-            lcd_printStr("BEARING"); // Print header
+            lcd_printStr("BEARING "); // Print header
 
             double disValueLine2 = bearingFinder(); // Get bearing value
 
-            sprintf(disStr, "%3d°  %c", (int)disValueLine2, bearingDirection(disValueLine2)); // Format bearing value
+            sprintf(disStr, "%3dDeg%c%c", (int)disValueLine2, bearingDirection(disValueLine2)[0], bearingDirection(disValueLine2)[1]); // Format bearing value
 
             lcd_setCursor(0, 1);  // Set cursor to line 2
             lcd_printStr(disStr); // Print formatted distance

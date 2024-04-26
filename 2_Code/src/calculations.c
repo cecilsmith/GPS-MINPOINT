@@ -137,7 +137,7 @@ char *bearingDirection(double bearing)
 {
     if (bearing >= 337.5 || bearing < 22.5)
     {
-        return "N";
+        return "N ";
     }
     else if (bearing >= 22.5 && bearing < 67.5)
     {
@@ -145,7 +145,7 @@ char *bearingDirection(double bearing)
     }
     else if (bearing >= 67.5 && bearing < 112.5)
     {
-        return "E";
+        return "E ";
     }
     else if (bearing >= 112.5 && bearing < 157.5)
     {
@@ -153,7 +153,7 @@ char *bearingDirection(double bearing)
     }
     else if (bearing >= 157.5 && bearing < 202.5)
     {
-        return "S";
+        return "S ";
     }
     else if (bearing >= 202.5 && bearing < 247.5)
     {
@@ -161,7 +161,7 @@ char *bearingDirection(double bearing)
     }
     else if (bearing >= 247.5 && bearing < 292.5)
     {
-        return "W";
+        return "W ";
     }
     else if (bearing >= 292.5 && bearing < 337.5)
     {
