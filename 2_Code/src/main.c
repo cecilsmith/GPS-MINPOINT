@@ -40,9 +40,9 @@ void setup(void)
     T1CON = 0;
     T1CONbits.TCKPS = 0b11;
     PR1 = 62499; // 1 second
-    T1CONbits.TON = 1;
-    _T1IE = 1;
     _T1IF = 0;
+    T1CONbits.TON = 1;
+//    _T1IE = 0;
 }
 
 int main(int argc, char const *argv[])
@@ -53,13 +53,13 @@ int main(int argc, char const *argv[])
     initGPS();
     initModuleOutput();
     lcd_init();
-    setTargetDestination(44.9758, 93.2172);
+    setTargetDestination(44.9758, -93.2172);
     delay_ms(1000);
-    bool LCD_flag = 0;
+    char LCD_flag = 0;
     while(1)
     {
-        while(_T1IF == 0);
-        _T1IF = 0;
+        while(validateModuleOutput() == 0);
+        delay_ms(750);
 
         char disStr[20];
 
@@ -70,18 +70,18 @@ int main(int argc, char const *argv[])
             lcd_setCursor(0, 0);
             if (disValueLine1 < 0)
             {
-                sprintf(disStr, "%7.3fS", abs(disValueLine1));
+                sprintf(disStr, "%7.3fS", (-1*disValueLine1));
             }
             else
             {
                 sprintf(disStr, "%7.3fN", disValueLine1);
             }
             lcd_printStr(disStr);
-
+            
             lcd_setCursor(0, 1);
             if (disValueLine2 < 0)
             {
-                sprintf(disStr, "%7.3fW", abs(disValueLine2));
+                sprintf(disStr, "%7.3fW", (-1*disValueLine2));
             }
             else
             {
@@ -98,7 +98,7 @@ int main(int argc, char const *argv[])
             disValueLine2 = distanceFinder();
             if (disValueLine2 > 10000)
             {
-                sprintf(disStr, "%6dkm", int(disValueLine2 / 1000));
+                sprintf(disStr, "%6dkm", (int)(disValueLine2 / 1000));
             }
             else
             {
