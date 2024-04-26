@@ -23,8 +23,7 @@ void lcd_cmd(char command)
     IFS3bits.MI2C2IF = 0;
 
     I2C2TRN = 0b01111100; // slave address
-    while (IFS3bits.MI2C2IF == 0)
-        ;
+    while (IFS3bits.MI2C2IF == 0);
     IFS3bits.MI2C2IF = 0;
 
     I2C2TRN = 0b00000000; // control byte
@@ -145,7 +144,6 @@ void lcd_printStr(const char s[])
     IFS3bits.MI2C2IF = 0;
 
     I2C2CONbits.PEN = 1; // end
-    while (I2C2CONbits.PEN == 1)
-        ;
+    while (I2C2CONbits.PEN == 1);
     IFS3bits.MI2C2IF = 0;
 }

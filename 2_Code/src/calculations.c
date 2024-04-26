@@ -37,10 +37,11 @@ double distanceFinder(void)
 {
     // Calculates distance to destination
     // Haversine Formula: 3440.1 * arccos((sin(lat A) * sin(lat B)) + cos(lat A) * cos(lat B) * cos(long A - long B))
+    double distance = 0;
     getCurrentLocation();
     double dinNM = 3440.1 * acos((sin(dToR(currLatitude)) * sin(dToR(destLatitude))) + cos(dToR(currLatitude)) * cos(dToR(destLatitude)) * cos(dToR(currLongitude) - dToR(destLongitude)));
-
-    return 1852.00 * dinNM; // In meters (conversion)
+    distance = 1852.00 * dinNM;
+    return distance; // In meters (conversion)
 }
 
 double bearingFinder()
