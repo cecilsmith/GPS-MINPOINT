@@ -1,13 +1,26 @@
+/*
+ * Course Number: EE2361
+ * Term: Spring 2024
+ * Lab/assignment number: Final Project
+ * Short Program Description: Contains functions related to performing calculations for navigation and positioning.
+ */
+
 #include <math.h>
 #include "calculations.h"
 #include "gps.h"
 
+// Placeholder variables for current and destination coordinates
 double destLatitude;
 double destLongitude;
-
 double currLatitude;
 double currLongitude;
 
+/**
+ * Sets the target destination latitude and longitude.
+ *
+ * @param latitude The destination latitude in degrees
+ * @param longitude The destination longitude in degrees
+ */
 void setTargetDestination(double latitude, double longitude)
 {
     /* This function sets the target destination latitude and longitude */
@@ -15,25 +28,45 @@ void setTargetDestination(double latitude, double longitude)
     destLongitude = longitude;
 }
 
-void getCurrentLocation()
+/**
+ * Gets current location from GPS module
+ */
+void getCurrentLocation(void)
 {
-    // Gets current location from GPS module
     while(!(validateModuleOutput()));
     currLatitude = getLatitude();
     currLongitude = getLongitude();
 }
 
-double dToR(double degrees) {
-    // Convert degrees to radians
+/**
+ * Converts degrees to radians.
+ *
+ * @param degrees The angle in degrees.
+ * @return The angle in radians.
+ */
+double dToR(double degrees)
+{
     return (degrees / 180.0) * M_PI;
 }
 
+/**
+ * Converts radians to degrees
+ *
+ * @param radians The angle in radians
+ * @return The angle in degrees
+ */
 double rToD(double radians)
 {
     return (radians * 180.0) / M_PI;
 }
 
-double distanceFinder() {
+/**
+ * Calculates distance between current location and destination using the Haverside formula.
+ *
+ * @return The distance between current location and destination in meters
+ */
+double distanceFinder(void)
+{
     getCurrentLocation();
     // Radius of the Earth in kilometers
     const double R = 6371000.0;
@@ -49,21 +82,28 @@ double distanceFinder() {
     double dLon = destLonRad - currLonRad;
     double a = sin(dLat / 2) * sin(dLat / 2) +
                cos(currLatRad) * cos(destLatRad) *
-               sin(dLon / 2) * sin(dLon / 2);
+                   sin(dLon / 2) * sin(dLon / 2);
     double c = 2 * atan2(sqrt(a), sqrt(1 - a));
-    double distance = R * c;
 
-    return distance;
+    // Return (radius * angle) in meters
+    return R * c;
 }
 
+/**
+ * Calculates bearing to destination
+ *
+ * @return The bearing to destination in degrees
+ */
 double bearingFinder()
 {
-    // Calculates bearing to destination
     // Bearing Formula: atan2(X,Y): X = cos ?b * sin ?L, Y = cos ?a * sin ?b ? sin ?a * cos ?b * cos ?L
     getCurrentLocation();
     double X, Y;
-    if ((destLatitude < 0) && currLatitude < 0)
+
+    // If both latitudes are negative or positive
+    if ((destLatitude < 0 && currLatitude < 0) || (destLatitude > 0 && currLatitude > 0))
     {
+        // There is no need for a offset by 360 degrees since the longitudes are already normalized
         X = cos(dToR(destLatitude)) * sin(dToR(abs(currLongitude - destLongitude)));
         Y = cos(dToR(currLatitude)) * sin(dToR(destLatitude)) - sin(dToR(currLatitude)) * cos(dToR(destLatitude)) * cos(dToR(abs(currLongitude - destLongitude)));
     }

@@ -1,9 +1,8 @@
-/* 
- * Date: 03/30/2024
- * Course number: EE 2361
+/*
+ * Course Number: EE 2361
  * Term: Spring
  * Lab/assignment number: Final Project
- * Short Program Description: UART Library to write and read to Grove - GPS Air530.
+ * Short Program Description: Library to write and read to the UART bus.
  */
 
 #ifndef UART_H
@@ -13,16 +12,27 @@
 extern "C" {
 #endif
 
-    void send_GPS_Str_command(unsigned char* s);                    // Sends a String to the GPS module using send_GPS_Char_command function
-                                                                // s: the string to be transmitted
-    void send_GPS_Char_command(unsigned char command);              // Sends a character to the GPS module via UART
-                                                                // command: the character to be transmitted
-    unsigned char get_GPS_char(void);                               // Retrieves a single character from the circular buffer
-    unsigned char get_GPS_Str(unsigned char* s); // Retrieves a string of data from the circular buffer
-                                                                // Assigns the character data to the s pointer
-    void init_UART(unsigned int baudRate);                          // Initializes UART communication settings
-    
+    // Sends a String to the GPS module using send_GPS_Char_command function
+    // s: the string to be transmitted
+    void send_GPS_Str_command(unsigned char *s);
+
+    // Sends a character to the GPS module via UART
+    // command: the character to be transmitted
+    void send_GPS_Char_command(unsigned char command);
+
+    // Retrieves a single character from the circular buffer
+    unsigned char get_GPS_char(void);
+
+    // Retrieves a string of data from the circular buffer
+    // Assigns the character data to the s pointer
+    unsigned char get_GPS_Str(unsigned char *s);
+
+    // Initializes UART communication settings
+    void init_UART(unsigned int baudRate);
+
+    // Obtains GLL GPS data
     void obtainGLL();
+
 #ifdef	__cplusplus
 }
 #endif

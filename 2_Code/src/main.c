@@ -1,3 +1,10 @@
+/*
+ * Course Number: EE2361
+ * Term: Spring 2024
+ * Lab/assignment number: Final Project
+ * Short Program Description: Main function that initializes peripherals and runs navigation logic
+ */
+
 #include "xc.h" 
 #include "uart.h"
 #include "gps.h"
@@ -30,19 +37,27 @@
 
 extern volatile char moduleOutput[50];
 
+/**
+ * @brief Performs one-time setup operations for the application.
+ *
+ * This function is called once at the start of the program to perform
+ * initialization tasks. It sets the RCDIV register to 0 to use the full
+ * 16MHz clock, configures all pins as digital I/O, initializes Timer1
+ * to generate a 1 second interrupt for the LCD, and starts the timer.
+ */
 void setup(void)
 {
     // Execute once code goes here
     CLKDIVbits.RCDIV = 0; // Set RCDIV=1:1 (default 2:1) 32MHz or FCY/2=16M
     AD1PCFG = 0x9FFF;     // sets all pins to digital I/O
-    
+
     TMR1 = 0;
     T1CON = 0;
     T1CONbits.TCKPS = 0b11;
     PR1 = 62499; // 1 second
     _T1IF = 0;
     T1CONbits.TON = 1;
-//    _T1IE = 0;
+    //    _T1IE = 0;
 }
 
 int main(int argc, char const *argv[])
@@ -53,7 +68,7 @@ int main(int argc, char const *argv[])
     initGPS();
     lcd_init();
     // Goldy Gopher Located at (44.97309399636732, -93.23485794557575)
-    setTargetDestination(45.173129, -93.230448);
+    setTargetDestination(44.97309399636732, -93.23485794557575);
     delay_ms(1000);
     char LCD_flag = 0;
     while(1)
@@ -63,51 +78,60 @@ int main(int argc, char const *argv[])
 
         char disStr[20];
 
+        // Display latitude and longitude values on LCD if LCD_flag is true
         if (LCD_flag)
         {
-            double disValueLine1 = getLatitude();
-            double disValueLine2 = getLongitude();
-            lcd_setCursor(0, 0);
+            double disValueLine1 = getLatitude();  // Get latitude value
+            double disValueLine2 = getLongitude(); // Get longitude value
+
+            lcd_setCursor(0, 0); // Set cursor to line 1
+
             if (disValueLine1 < 0)
             {
-                sprintf(disStr, "%7.3fS", (-1*disValueLine1));
+                sprintf(disStr, "%7.3fS", (-1 * disValueLine1)); // Format negative latitude
             }
             else
             {
-                sprintf(disStr, "%7.3fN", disValueLine1);
+                sprintf(disStr, "%7.3fN", disValueLine1); // Format positive latitude
             }
-            lcd_printStr(disStr);
-            
-            lcd_setCursor(0, 1);
+
+            lcd_printStr(disStr); // Print formatted latitude
+
+            lcd_setCursor(0, 1); // Set cursor to line 2
             if (disValueLine2 < 0)
             {
-                sprintf(disStr, "%7.3fW", (-1*disValueLine2));
+                sprintf(disStr, "%7.3fW", (-1 * disValueLine2)); // Format negative longitude
             }
             else
             {
-                sprintf(disStr, "%7.3fE", disValueLine2);
+                sprintf(disStr, "%7.3fE", disValueLine2); // Format positive longitude
             }
-            lcd_printStr(disStr);
+            lcd_printStr(disStr); // Print formatted longitude
         }
         else
         {
-            // Write the distance screen
-            lcd_setCursor(0, 0);
-            lcd_printStr("DISTANCE");
-            double disValueLine2;
-            disValueLine2 = distanceFinder();
+
+            // Display distance value on LCD if LCD_flag is false
+
+            lcd_setCursor(0, 0);      // Set cursor to line 1
+            lcd_printStr("DISTANCE"); // Print header
+
+            double disValueLine2 = distanceFinder(); // Get distance value
+
             if (disValueLine2 > 10000)
             {
-                sprintf(disStr, "%6dkm", (int)(disValueLine2 / 1000));
+                sprintf(disStr, "%6.1fkm", (float)(disValueLine2 / 1000.00)); // Format distance in km
             }
             else
             {
-                sprintf(disStr, "%7.1fm", disValueLine2);
+                sprintf(disStr, "%7.1fm", disValueLine2); // Format distance in m
             }
-            lcd_setCursor(0, 1);
-            lcd_printStr(disStr);
+
+            lcd_setCursor(0, 1);  // Set cursor to line 2
+            lcd_printStr(disStr); // Print formatted distance
         }
-        LCD_flag = !LCD_flag;
+
+        LCD_flag = !LCD_flag; // Toggle LCD_flag
     }
     return 0;
 }
