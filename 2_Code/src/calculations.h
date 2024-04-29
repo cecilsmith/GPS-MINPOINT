@@ -13,10 +13,10 @@ extern "C"
 {
 #endif
 
-    // Sets the target destination latitude and longitude in radians
+    // Sets the target destination latitude and longitude in degrees
     void setTargetDestination(double latitude, double longitude);
 
-    // Gets the current latitude and longitude from the GPS module in radians
+    // Gets the current latitude and longitude from the GPS module in degrees
     void getCurrentLocation(void);
 
     // Converts degrees to radians
@@ -31,7 +31,7 @@ extern "C"
     // Calculates the bearing/heading between the current location and target destination in radians
     double bearingFinder(void);
 
-    // Returns the bearing between the current location and target destination in degrees
+    // Returns the cardinal direction between the current location and target destination as a string
     char *bearingDirection(double bearing);
 
 #ifdef __cplusplus

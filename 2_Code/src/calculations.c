@@ -94,7 +94,7 @@ double distanceFinder(void)
  *
  * @return The bearing to destination in (0-360) degrees
  */
-double bearingFinder()
+double bearingFinder(void)
 {
     // Bearing Formula: atan2(X,Y): X = cos ?b * sin ?L, Y = cos ?a * sin ?b ? sin ?a * cos ?b * cos ?L
     getCurrentLocation();

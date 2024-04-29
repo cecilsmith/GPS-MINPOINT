@@ -13,7 +13,7 @@ extern "C"
 {
 #endif
 
-    // Delays for the specified number of microseconds
+    // Delays for the specified number of milliseconds
     void delay_ms(unsigned int ms);
 
 #ifdef __cplusplus
